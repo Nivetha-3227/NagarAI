@@ -4,7 +4,7 @@ supabase==2.4.0
 python-dotenv==1.0.1
 sentence-transformers==3.0.1
 transformers==4.42.3
-torch==2.3.1
+torch==2.9.0
 librosa==0.10.2.post1
 soundfile==0.12.1
 scipy==1.14.0
