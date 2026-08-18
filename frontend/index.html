@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NagarAI Civic Complaint Portal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>NagarAI Complaint Submission</h1>
+  </header>
+
+  <main>
+    <!-- Voice Complaint -->
+    <section>
+      <h2>Voice Complaint</h2>
+      <input type="file" id="voiceFile" accept="audio/*">
+      <button onclick="submitVoice()">Submit Voice Complaint</button>
+    </section>
+
+    <!-- Text Complaint -->
+    <section>
+      <h2>Text Complaint</h2>
+      <textarea id="textComplaint" placeholder="Describe your complaint..."></textarea>
+      <button onclick="submitText()">Submit Text Complaint</button>
+    </section>
+
+    <!-- Image Complaint -->
+    <section>
+      <h2>Image Complaint</h2>
+      <input type="file" id="imageFile" accept="image/*">
+      <input type="text" id="imageCaption" placeholder="Enter caption/description">
+      <button onclick="submitImage()">Submit Image Complaint</button>
+    </section>
+
+    <div id="response"></div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 NagarAI</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
