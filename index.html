@@ -1,45 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>NagarAI Civic Complaint Portal</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NagarAI - Public Complaint Intake</title>
+    <!-- Linked correctly to a local root stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        h1, h2 {
+            color: #1a365d;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .gps-status {
+            font-weight: bold;
+            padding: 8px;
+            background: #edf2f7;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #3182ce;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 5px;
+        }
+        button:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+        }
+        button#startRec {
+            background-color: #e53e3e;
+        }
+        button#stopRec {
+            background-color: #4a5568;
+        }
+        #status {
+            background-color: #2d3748;
+            color: #a0aec0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 20px;
+            min-height: 50px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>NagarAI Complaint Submission</h1>
-  </header>
 
-  <main>
-    <!-- Voice Complaint -->
-    <section>
-      <h2>Voice Complaint</h2>
-      <input type="file" id="voiceFile" accept="audio/*">
-      <button onclick="submitVoice()">Submit Voice Complaint</button>
-    </section>
+    <h1>NagarAI</h1>
+    <p>Submit voice or text complaints alongside automatic verification of live GPS coordinate location metadata.</p>
 
-    <!-- Text Complaint -->
-    <section>
-      <h2>Text Complaint</h2>
-      <textarea id="textComplaint" placeholder="Describe your complaint..."></textarea>
-      <button onclick="submitText()">Submit Text Complaint</button>
-    </section>
+    <!-- Global Location Tracking Indicator Block -->
+    <div class="card">
+        <h2>GPS Tracking System</h2>
+        <div id="gpsText" class="gps-status">⌛ Checking browser access...</div>
+    </div>
 
-    <!-- Image Complaint -->
-    <section>
-      <h2>Image Complaint</h2>
-      <input type="file" id="imageFile" accept="image/*">
-      <input type="text" id="imageCaption" placeholder="Enter caption/description">
-      <button onclick="submitImage()">Submit Image Complaint</button>
-    </section>
+    <!-- 1A & 1B. Voice Complaint Section -->
+    <div class="card">
+        <h2>1. Voice Complaint Intake</h2>
+        
+        <!-- Microphone Capture Control Interfacing with line 80 startBtn elements -->
+        <div class="form-group">
+            <label>Live Audio Streaming Mic Option:</label>
+            <button type="button" id="startRec">Start Recording</button>
+            <button type="button" id="stopRec" disabled>Stop Recording</button>
+            <p id="recStatus" style="font-style: italic; color: #718096; margin-top: 8px;">Click Start to capture voice inputs...</p>
+        </div>
 
-    <div id="response"></div>
-  </main>
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
 
-  <footer>
-    <p>&copy; 2026 NagarAI</p>
-  </footer>
+        <!-- File Upload Form Element interacting with event sub-block 1B -->
+        <form id="voiceForm">
+            <div class="form-group">
+                <label for="audioFile">Or Upload Recorded Audio File Attachment:</label>
+                <input type="file" id="audioFile" accept="audio/*">
+            </div>
+            <button type="submit">Submit Audio File</button>
+        </form>
+    </div>
 
-  <script src="script.js"></script>
+    <!-- 2. Text Complaint Form Component -->
+    <div class="card">
+        <h2>2. Text Complaint Intake</h2>
+        <!-- Form structure maps cleanly onto script.js Event Listeners -->
+        <form id="textForm">
+            <div class="form-group">
+                <label for="textInput">Describe the civic problem explicitly:</label>
+                <!-- Linked id explicitly match standard payload element selectors -->
+                <textarea id="textInput" placeholder="Type structural details of the complaint here..."></textarea>
+            </div>
+            <!-- Removed native inline raw event binders to allow Event Interception by script.js -->
+            <button type="submit">Submit Text Complaint</button>
+        </form>
+    </div>
+
+    <!-- Central Response Log Layout Output Block -->
+    <h2>System Activity Terminal Log</h2>
+    <div id="status">System status and server API return metrics appear here...</div>
+
+    <!-- Attached JavaScript Implementation File Integration point -->
+    <script src="script.js"></script>
 </body>
 </html>
