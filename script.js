@@ -218,3 +218,52 @@ if (textForm) {
         }
     });
 }
+// ============================================================
+// 3. IMAGE COMPLAINT INTERACTION HANDLER
+// ============================================================
+document.getElementById("imageForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const imageInput = document.getElementById("imageFile");
+    const captionInput = document.getElementById("imageCaption");
+    const statusDiv = document.getElementById("status");
+
+    if (!imageInput.files[0]) {
+        alert("Please select an image file first.");
+        return;
+    }
+    if (!captionInput.value.trim()) {
+        alert("Please add a short caption or context description.");
+        return;
+    }
+
+    try {
+        statusDiv.innerText = "Capturing location & uploading image file package...";
+        const coords = await getLiveLocation();
+
+        const formData = new FormData();
+        // Matches backend schema arguments exactly: image, caption, gps_lat, gps_lng
+        formData.append("image", imageInput.files[0]);
+        formData.append("caption", captionInput.value);
+        formData.append("gps_lat", coords.lat);
+        formData.append("gps_lng", coords.long);
+
+        const response = await fetch(`${API_BASE_URL}/complaint/image`, {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.detail || `Server error: ${response.status}`);
+        }
+
+        statusDiv.innerText = "✅ Image Complaint Submitted!\n\n" + JSON.stringify(result, null, 2);
+        imageInput.value = "";
+        captionInput.value = "";
+    } catch (err) {
+        statusDiv.innerText = "❌ Error submitting image complaint: " + err.message;
+    }
+});
+
