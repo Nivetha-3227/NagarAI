@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+supabase
+python-dotenv
+sentence-transformers
+transformers
+torch
+librosa
+soundfile
+scipy
+whisper
+google-generativeai
