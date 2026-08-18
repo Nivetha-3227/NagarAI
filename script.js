@@ -1,15 +1,10 @@
 const API_BASE_URL = "https://nagarai-x9xe.onrender.com";
-";
-
 let mediaRecorder;
 let audioChunks = [];
-
-
 // ---------- Helper: Capture Live GPS Coordinates ----------
 
 function getLiveLocation() {
     const gpsText = document.getElementById("gpsText");
-
     return new Promise((resolve, reject) => {
 
         if (!navigator.geolocation) {
@@ -100,8 +95,6 @@ startBtn.addEventListener("click", async () => {
         mediaRecorder.ondataavailable = (event) => {
             audioChunks.push(event.data);
         };
-
-
         mediaRecorder.start();
 
         startBtn.disabled = true;
