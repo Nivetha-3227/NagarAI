@@ -1,11 +1,11 @@
+# Complete NagarAI HTML with Image Intake Integration
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NagarAI - Public Complaint Intake</title>
-    <!-- Linked correctly to a local root stylesheet -->
-    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -19,6 +19,7 @@
         h1, h2 {
             color: #1a365d;
         }
+
         .card {
             background: #fff;
             padding: 20px;
@@ -38,10 +39,11 @@
         }
         label {
             display: block;
+
             margin-bottom: 5px;
             font-weight: bold;
         }
-        textarea, input[type="file"] {
+        textarea, input[type="file"], input[type="text"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #cbd5e0;
@@ -57,6 +59,7 @@
             color: white;
             padding: 10px 15px;
             border: none;
+
             border-radius: 4px;
             cursor: pointer;
             font-size: 1rem;
@@ -76,6 +79,7 @@
             background-color: #2d3748;
             color: #a0aec0;
             padding: 15px;
+
             border-radius: 6px;
             font-family: monospace;
             white-space: pre-wrap;
@@ -87,7 +91,7 @@
 <body>
 
     <h1>NagarAI</h1>
-    <p>Submit voice or text complaints alongside automatic verification of live GPS coordinate location metadata.</p>
+    <p>Submit voice, text, or image complaints alongside automatic verification of live GPS coordinate location metadata.</p>
 
     <!-- Global Location Tracking Indicator Block -->
     <div class="card">
@@ -95,21 +99,17 @@
         <div id="gpsText" class="gps-status">⌛ Checking browser access...</div>
     </div>
 
-    <!-- 1A & 1B. Voice Complaint Section -->
+
+    <!-- 1. Voice Complaint Section -->
     <div class="card">
         <h2>1. Voice Complaint Intake</h2>
-        
-        <!-- Microphone Capture Control Interfacing with line 80 startBtn elements -->
         <div class="form-group">
             <label>Live Audio Streaming Mic Option:</label>
             <button type="button" id="startRec">Start Recording</button>
             <button type="button" id="stopRec" disabled>Stop Recording</button>
             <p id="recStatus" style="font-style: italic; color: #718096; margin-top: 8px;">Click Start to capture voice inputs...</p>
         </div>
-
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-
-        <!-- File Upload Form Element interacting with event sub-block 1B -->
         <form id="voiceForm">
             <div class="form-group">
                 <label for="audioFile">Or Upload Recorded Audio File Attachment:</label>
@@ -119,18 +119,33 @@
         </form>
     </div>
 
-    <!-- 2. Text Complaint Form Component -->
+
+    <!-- 2. Text Complaint Section -->
     <div class="card">
         <h2>2. Text Complaint Intake</h2>
-        <!-- Form structure maps cleanly onto script.js Event Listeners -->
         <form id="textForm">
             <div class="form-group">
                 <label for="textInput">Describe the civic problem explicitly:</label>
-                <!-- Linked id explicitly match standard payload element selectors -->
                 <textarea id="textInput" placeholder="Type structural details of the complaint here..."></textarea>
             </div>
-            <!-- Removed native inline raw event binders to allow Event Interception by script.js -->
             <button type="submit">Submit Text Complaint</button>
+        </form>
+    </div>
+
+    <!-- 3. Image Complaint Section (Added Input Option) -->
+    <div class="card">
+        <h2>3. Image Complaint Intake</h2>
+        <form id="imageForm">
+            <div class="form-group">
+                <label for="imageFile">Upload Complaint Photo/Image:</label>
+                <input type="file" id="imageFile" accept="image/*">
+
+            </div>
+            <div class="form-group">
+                <label for="imageCaption">Image Caption / Context Description:</label>
+                <input type="text" id="imageCaption" placeholder="Provide extra descriptive details about the image context...">
+            </div>
+            <button type="submit">Submit Image Complaint</button>
         </form>
     </div>
 
@@ -142,3 +157,5 @@
     <script src="script.js"></script>
 </body>
 </html>
+
+
