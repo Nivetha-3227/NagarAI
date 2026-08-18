@@ -1,7 +1,8 @@
 import uuid, datetime, dataclasses
 from typing import Optional
 from backend.database import supabase
-from shared.nlp import CategoryClassifier, Summarizer
+from backend.shared.nlp import CategoryClassifier, Summarizer
+
 
 @dataclasses.dataclass
 class ImageComplaintResult:
