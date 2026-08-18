@@ -1,18 +1,8 @@
-"""
-nagarAI - shared/fusion.py
-=============================
-Fusion logic: combines results from voice, text, and/or image complaints
-into one unified Complaint record, enriches with geocoding + triage,
-and stores in Supabase.
-"""
-
 from typing import Optional, List
-from shared.complaint_schema import Complaint, Geocoder, TriageEstimator
+from shared.complaint_schema import Complaint, Geocoder
 from shared.supabase_client import SupabaseComplaintStore
-
-# Import Gemini client
+from shared.triage import TriageEstimator
 from google import genai
-
 
 def _merge_category(results: List[dict]) -> str:
     from collections import Counter
@@ -21,16 +11,13 @@ def _merge_category(results: List[dict]) -> str:
     tied = [cat for cat, count in votes.items() if count == top_count]
     if len(tied) == 1:
         return tied[0]
-    # break ties by highest confidence among the tied categories
     best = max((r for r in results if r["category"] in tied),
                key=lambda r: r["category_confidence"])
     return best["category"]
 
-
 def _merge_location(results: List[dict]) -> Optional[str]:
     mentions = [r.get("location_mention") for r in results if r.get("location_mention")]
     return max(mentions, key=len) if mentions else None
-
 
 def _merge_gps(results: List[dict]) -> tuple:
     for r in results:
@@ -38,34 +25,29 @@ def _merge_gps(results: List[dict]) -> tuple:
             return r["gps_lat"], r["gps_lng"]
     return None, None
 
-
 def _merge_description(results: List[dict], category: str, api_key: Optional[str] = None) -> str:
     if len(results) == 1:
         return results[0]["description"]
 
     client = genai.Client(api_key=api_key)
     combined_input = "\n".join(f"- ({r['source']}): {r['description']}" for r in results)
-
     prompt = (
         f"These are separate descriptions of the SAME civic complaint "
-        f"(category: {category}), captured via different input methods. "
-        f"Combine them into one coherent sentence (max 30 words), keeping "
-        f"any concrete detail (location, severity) mentioned in any of them:\n\n{combined_input}"
+        f"(category: {category}). Combine them into one coherent sentence "
+        f"(max 30 words), keeping any concrete detail:\n\n{combined_input}"
     )
-
     response = client.generate_text(model="gemini-1.5-flash", prompt=prompt)
     return response.text.strip()
 
-
 def fuse_and_submit(
-    voice_result=None,   # VoiceComplaintResult or None
-    text_result=None,    # TextComplaintResult or None
-    image_result=None,   # ImageComplaintResult or None
+    voice_result=None,
+    text_result=None,
+    image_result=None,
     audio_path: Optional[str] = None,
     image_path: Optional[str] = None,
     gemini_api_key: Optional[str] = None,
+    nearby_places: Optional[List[dict]] = None,
 ) -> dict:
-    """Call after running whichever of the 3 pipelines apply. Returns the inserted row."""
 
     results = []
     if voice_result:
@@ -111,16 +93,17 @@ def fuse_and_submit(
         image_url=image_url,
     )
 
-    # cross-modality enrichment -- geocode the merged location, estimate triage
+    # Geocode enrichment
     geocoder = Geocoder()
     if complaint.location_mention:
         coords = geocoder.geocode(complaint.location_mention)
         if coords:
             complaint.geocoded_lat, complaint.geocoded_lng = coords
 
-    triage = TriageEstimator(api_key=gemini_api_key)
-    complaint.severity, complaint.people_affected = triage.estimate(
-        complaint.description, complaint.category
-    )
+    # Triage scoring
+    triage = TriageEstimator()
+    severity, people_affected = triage.estimate(results, gps_lat, gps_lng, nearby_places)
+    complaint.severity = severity
+    complaint.people_affected = people_affected
 
     return store.insert_complaint(complaint)
