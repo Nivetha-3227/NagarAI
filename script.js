@@ -99,7 +99,7 @@ if (startBtn && stopBtn) {
                 formData.append("gps_lat", coords.lat);
                 formData.append("gps_lng", coords.long);
 
-                const response = await fetch(`${API_BASE_URL}/complaints/voice`, {
+                const response = await fetch(`${API_BASE_URL}/complaint/voice`, {
                     method: "POST",
                     body: formData
                 });
@@ -150,7 +150,7 @@ if (voiceForm) {
             formData.append("gps_lat", coords.lat);
             formData.append("gps_lng", coords.long);
 
-            const response = await fetch(`${API_BASE_URL}/complaints/voice`, {
+            const response = await fetch(`${API_BASE_URL}/complaint/voice`, {
                 method: "POST",
                 body: formData
             });
