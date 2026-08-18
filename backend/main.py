@@ -17,12 +17,19 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods (POST, OPTIONS, etc.)
-    allow_headers=["*"],  # Allows all headers (Content-Type, etc.)
+    allow_origins=["*"],  # Allows any origin, including all GitHub pages domains
+    allow_credentials=False,  # Note: Must be False if allow_origins=["*"]
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+from fastapi import Response
 
+@app.options("/{rest_of_path:path}")
+async def preflight_handler(rest_of_path: str, response: Response):
+    response.headers["Access-Control-Allow-Origin"] = "https://nivetha-3227.github.io"
+    response.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
 # ============================================================
 # 1. VOICE COMPLAINT ENDPOINTS
 # ============================================================
