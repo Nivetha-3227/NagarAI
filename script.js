@@ -195,7 +195,7 @@ if (textForm) {
                 gps_lng: coords.long
             };
 
-            const response = await fetch(`${API_BASE_URL}/api/text-intake`, {
+            const response = await fetch(`${API_BASE_URL}/complaint/text`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
