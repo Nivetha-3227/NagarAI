@@ -1,7 +1,10 @@
+import os
+import tempfile
+import traceback
+
 from fastapi import FastAPI, UploadFile, Form, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-import traceback
 
 # Import your custom pipeline modules
 try:
@@ -30,15 +33,16 @@ app.add_middleware(
 )
 
 # ============================================================
-# 2. BULLETPROOF CORS EXCEPTION HANDLER (The Fix)
+# 2. BULLETPROOF CORS EXCEPTION HANDLER
 # ============================================================
-# When FastAPI encounters a 500 error or pipeline crash, it drops middleware 
-# headers, causing a fake CORS error. This block forces CORS headers onto failures.
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     error_trace = traceback.format_exc()
-    print(f"CRASH LOG:\n{error_trace}") # Appears in your Render Terminal Logs
-    
+    print(f"CRASH LOG:\n{error_trace}")  # Appears in your Render Terminal Logs
+
+    origin = request.headers.get("origin", "")
+    allowed_origin = origin if origin in origins else origins[0]
+
     return JSONResponse(
         status_code=500,
         content={
@@ -48,7 +52,7 @@ async def global_exception_handler(request: Request, exc: Exception):
             "traceback": error_trace
         },
         headers={
-            "Access-Control-Allow-Origin": "https://nivetha-3227.github.io",
+            "Access-Control-Allow-Origin": allowed_origin,
             "Access-Control-Allow-Credentials": "true",
             "Access-Control-Allow-Methods": "*",
             "Access-Control-Allow-Headers": "*",
@@ -58,7 +62,6 @@ async def global_exception_handler(request: Request, exc: Exception):
 # ============================================================
 # 3. DIAGNOSTIC CONNECTION TEST ROUTE
 # ============================================================
-# Hit this from your browser console to check if CORS is structurally alive
 @app.get("/api/test-connection")
 async def test_connection():
     return {"status": "success", "message": "CORS handshake is perfectly functional!"}
@@ -66,25 +69,33 @@ async def test_connection():
 # ============================================================
 # 4. COMPLAINT INTAKE PATHWAYS
 # ============================================================
-
-@app.post("/complaints/voice")
+@app.post("/complaint/voice")
 async def submit_voice(
-    audio: UploadFile, 
-    gps_lat: float = Form(None), 
+    audio: UploadFile,
+    gps_lat: float = Form(None),
     gps_lng: float = Form(None)
 ):
+    audio_bytes = await audio.read()
+    suffix = os.path.splitext(audio.filename)[1] or ".webm"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(audio_bytes)
+        tmp_path = tmp.name
+
     pipeline = VoiceComplaintPipeline()
-    result = pipeline.process(audio.file.name, gps_lat=gps_lat, gps_lng=gps_lng)
+    try:
+        result = pipeline.process(tmp_path, gps_lat=gps_lat, gps_lng=gps_lng)
+    finally:
+        os.remove(tmp_path)
+
     return store_complaint_in_supabase(result, storage_path=audio.filename)
 
 
-@app.post("/api/text-intake")
+@app.post("/complaint/text")
 async def submit_text(payload: dict):
     text = payload.get("text", "")
     gps_lat = payload.get("gps_lat")
     gps_lng = payload.get("gps_lng")
-    
-    # This pipeline execution is likely missing a library or environment key, forcing the 500 error
+
     pipeline = TextComplaintPipeline()
     result = pipeline.process(text, gps_lat=gps_lat, gps_lng=gps_lng)
     return store_text_complaint(result)
@@ -92,11 +103,21 @@ async def submit_text(payload: dict):
 
 @app.post("/complaint/image")
 async def submit_image(
-    image: UploadFile, 
-    caption: str = Form(...), 
-    gps_lat: float = Form(None), 
+    image: UploadFile,
+    caption: str = Form(...),
+    gps_lat: float = Form(None),
     gps_lng: float = Form(None)
 ):
+    image_bytes = await image.read()
+    suffix = os.path.splitext(image.filename)[1] or ".jpg"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(image_bytes)
+        tmp_path = tmp.name
+
     pipeline = ImageComplaintPipeline()
-    result = pipeline.process(image.file.name, caption, gps_lat=gps_lat, gps_lng=gps_lng)
+    try:
+        result = pipeline.process(tmp_path, caption, gps_lat=gps_lat, gps_lng=gps_lng)
+    finally:
+        os.remove(tmp_path)
+
     return store_image_complaint(result)
