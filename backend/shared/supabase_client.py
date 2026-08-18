@@ -6,7 +6,7 @@ Wrapper for Supabase operations: uploading files and inserting complaints.
 
 import os
 from supabase import create_client, Client
-
+from backend.database import supabase
 class SupabaseComplaintStore:
     def __init__(self):
         url = os.getenv("SUPABASE_URL")
