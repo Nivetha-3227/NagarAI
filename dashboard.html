@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>NagarAI Dashboard</title>
+
+    <!-- Main NagarAI stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+</head>
+
+
+<body>
+
+<div class="dashboard-container">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="dashboard-header">
+
+        <div>
+            <h1>NagarAI</h1>
+
+            <p class="dashboard-subtitle">
+                Civic Intelligence Dashboard
+            </p>
+        </div>
+
+
+        <div class="header-actions">
+
+            <span class="admin-badge">
+                🛡️ Administrator
+            </span>
+
+            <button
+                class="logout-btn"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         SUMMARY CARDS
+         ===================================================== -->
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📋
+            </div>
+
+            <div>
+                <p>Total Complaints</p>
+
+                <h2 id="totalComplaints">
+                    —
+                </h2>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🔴
+            </div>
+
+            <div>
+                <p>High Priority</p>
+
+                <h2 id="highPriority">
+                    —
+                </h2>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                👥
+            </div>
+
+            <div>
+                <p>People Affected</p>
+
+                <h2 id="peopleAffected">
+                    —
+                </h2>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🔗
+            </div>
+
+            <div>
+                <p>Issue Clusters</p>
+
+                <h2 id="issueClusters">
+                    —
+                </h2>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MAP
+         ===================================================== -->
+
+    <section class="dashboard-card map-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    📍 Complaint Map
+                </h2>
+
+                <p>
+                    Geographic distribution of reported civic issues
+                </p>
+
+            </div>
+
+
+            <div class="map-legend">
+
+                <span>
+                    <i class="legend-dot severity-5"></i>
+                    Critical
+                </span>
+
+                <span>
+                    <i class="legend-dot severity-4"></i>
+                    High
+                </span>
+
+                <span>
+                    <i class="legend-dot severity-3"></i>
+                    Medium
+                </span>
+
+                <span>
+                    <i class="legend-dot severity-1"></i>
+                    Low
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div id="complaintMap"></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PRIORITY QUEUE
+         ===================================================== -->
+
+    <section class="dashboard-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    ⚡ Priority Queue
+                </h2>
+
+                <p>
+                    Issues ranked by severity, impact and frequency
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="complaints-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Priority
+                        </th>
+
+                        <th>
+                            Issue
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Severity
+                        </th>
+
+                        <th>
+                            People Affected
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="complaintsTable">
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="loading-row"
+                        >
+                            Loading complaints...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ISSUE DETAILS
+         ===================================================== -->
+
+    <section class="dashboard-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    📊 NagarAI Insights
+                </h2>
+
+                <p>
+                    AI-generated overview of current civic issues
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="insights-grid">
+
+            <div class="insight-card">
+
+                <span class="insight-label">
+                    Most Reported Category
+                </span>
+
+                <strong id="topCategory">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="insight-card">
+
+                <span class="insight-label">
+                    Critical Issues
+                </span>
+
+                <strong id="criticalIssues">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="insight-card">
+
+                <span class="insight-label">
+                    Pending Issues
+                </span>
+
+                <strong id="pendingIssues">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="insight-card">
+
+                <span class="insight-label">
+                    Resolved Issues
+                </span>
+
+                <strong id="resolvedIssues">
+                    —
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<!-- =========================================================
+     LEAFLET JS
+     ========================================================= -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<!-- =========================================================
+     DASHBOARD JS
+     ========================================================= -->
+
+<script src="dashboard.js"></script>
+
+
+<!-- =========================================================
+     LOGOUT
+     ========================================================= -->
+
+<script>
+
+function logout() {
+
+    /*
+       For now this simply returns
+       the user to the login page.
+
+       Later this can be replaced with
+       Supabase Auth signOut().
+    */
+
+    window.location.href = "index.html";
+}
+
+</script>
+
+
+</body>
+
+</html>
