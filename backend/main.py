@@ -20,14 +20,12 @@ app = FastAPI(title="nagarAI Civic Complaint API")
 # 1. CORS MIDDLEWARE SETUP
 # ============================================================
 origins = [
-    "https://nivetha-3227.github.io",
-    "https://sheril07.github.io",
+    "https://nivetha-3227.github.io"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
